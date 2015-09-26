@@ -1,0 +1,12 @@
+<div class="container">
+    <h1>Rugby agenda voor {{=it.name}}</h1>
+    Kopieer de volgende url naar Google Calendar of Outlook om de agenda te importeren.
+
+    <h3>Gehele competitie</h3>
+    <pre>{{=it.url}}</pre>
+    <br>
+    {{~it.teams:t}}
+    <h3>Alleen wedstrijden van {{=t.name}}</h3>
+    <pre>{{=it.url}}{{=t.name.split(' ').join('_')}}/</pre>
+    {{~}}
+</div>
