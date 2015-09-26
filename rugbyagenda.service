@@ -1,0 +1,14 @@
+[Unit]
+Description=rugbyagenda.nl
+Requires=network.target
+After=network.target
+
+[Service]
+TimeoutStartSec=0
+Type=forking
+ExecStart=/usr/local/bin/forever start --pidFile /var/run/rugbyagenda.pid -l /var/log/rugbyagenda.out.log -e /var/log/rugbyagenda.error.log -a -d -f /srv/node-rugbyagenda.nl/index.js
+ExecReload=/usr/local/bin/forever restart /srv/node-rugbyagenda.nl/index.js
+ExecStop=/usr/local/bin/forever stop /srv/node-rugbyagenda.nl/index.js
+
+[Install]
+WantedBy=multi-user.target
