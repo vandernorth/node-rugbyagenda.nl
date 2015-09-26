@@ -14,7 +14,7 @@
                     <ul class="list-group">
                         {{~l.divisions:d}}
                         {{?d}}
-                        <a href="/agenda/{{=d.name.split(' ').join('_')}}/" class="list-group-item">
+                        <a href="/agenda/{{=d.name.cleanup()}}/" class="list-group-item">
                             {{=d.name}}
                         </a>
                         {{?}}

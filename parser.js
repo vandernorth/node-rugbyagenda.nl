@@ -1,3 +1,7 @@
+String.prototype.cleanup = function () {
+    return this.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-");
+};
+
 var cheerio  = require('cheerio'),
     _        = require('lodash'),
     http     = require('http'),
@@ -10,9 +14,9 @@ var Parser = function () {
 
 };
 
-Parser.prototype.getCompetition = function (override) {
+Parser.prototype.getCompetition = function ( override ) {
     return new Promise(( resolve, reject ) => {
-        if ( !override || fs.existsSync('./data/competition.json') ) {
+        if ( !override && fs.existsSync('./data/competition.json') ) {
             resolve(JSON.parse(fs.readFileSync('./data/competition.json').toString()));
         }
         else {
@@ -120,7 +124,7 @@ Parser.prototype.parseDivisions = function ( htmlpage ) {
 
 Parser.prototype.getMatches = function ( division ) {
     return new Promise(( resolve, reject ) => {
-        var filename = division.name.split(' ').join('_') + '.json';
+        var filename = division.name.cleanup() + '.json';
         console.log(division.name, '-', filename);
 
         var req = http.request({
