@@ -93,4 +93,5 @@ function compareName( a, b ) {
 
 var server = app.listen(82, () => {
     console.log('rugbyagenda.nl listning on port 82');
+    console.log('Working directory', process.cwd(), __dirname);
 });
