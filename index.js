@@ -91,6 +91,14 @@ function compareName( a, b ) {
     return a.cleanup() === b.cleanup();
 }
 
+try {
+    process.chdir(__dirname);
+    console.log('New directory: ' + process.cwd());
+}
+catch ( err ) {
+    console.log('chdir: ' + err);
+}
+
 var server = app.listen(82, () => {
     console.log('rugbyagenda.nl listning on port 82');
     console.log('Working directory', process.cwd(), __dirname);
