@@ -61,8 +61,8 @@ app.get(/^\/ical\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function ( req, res ) {
             events:   icalMatches(matches.matches, team)
         });
 
-        //cal.serve(res);
-        res.render('agenda', { url: cal.toString() });
+        cal.serve(res);
+        //res.render('agenda', { url: cal.toString() });
     }
     catch ( ex ) {
         console.error(ex);
