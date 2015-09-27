@@ -1,14 +1,18 @@
+require("console-stamp")(console);
+
 var Parser     = require('./parser'),
     fs         = require('fs'),
     thisParser = new Parser(),
     doT        = require('express-dot'),
     ical       = require('ical-generator'),
     util       = require('util'),
+    morgan     = require('morgan'),
     _          = require('lodash');
 
 var express = require('express');
 var app     = express();
 
+app.use(morgan('combined'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'dot');
 app.engine('dot', doT.__express);
@@ -87,4 +91,6 @@ function compareName( a, b ) {
     return a.cleanup() === b.cleanup();
 }
 
-var server = app.listen(82);
+var server = app.listen(82, () => {
+    console.log('rugbyagenda.nl listning on port 82');
+});

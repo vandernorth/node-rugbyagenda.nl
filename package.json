@@ -25,6 +25,8 @@
     "express-request-id": "^1",
     "express"           : "^4",
     "express-dot"       : "^0",
+    "console-stamp"     : "*",
+    "morgan"            : "*",
     "cookie-parser"     : "^1"
   },
   "license"     : "MIT"

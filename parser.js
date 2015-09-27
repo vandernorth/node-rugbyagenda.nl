@@ -20,6 +20,7 @@ Parser.prototype.getCompetition = function ( override ) {
             resolve(JSON.parse(fs.readFileSync('./data/competition.json').toString()));
         }
         else {
+            console.warn('Competition file not available, creating a new one.', override, fs.existsSync('./data/competition.json'));
             this.updateCompetitions().then(resolve).catch(reject);
         }
     });
