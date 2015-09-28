@@ -1,6 +1,11 @@
 String.prototype.cleanup = function () {
     return this.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-");
 };
+String.prototype.undash  = function () {
+    return this.replace(/[^a-zA-Z0-9]+/g, " ").replace(/\w\S*/g, function ( txt ) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+};
 
 var cheerio  = require('cheerio'),
     _        = require('lodash'),
@@ -10,9 +15,7 @@ var cheerio  = require('cheerio'),
     url      = require('url'),
     startUrl = 'http://www.rugby.nl/competitie/competitie';
 
-var Parser = function () {
-
-};
+var Parser = function () {};
 
 Parser.prototype.getCompetition = function ( override ) {
     return new Promise(( resolve, reject ) => {
@@ -24,7 +27,6 @@ Parser.prototype.getCompetition = function ( override ) {
             this.updateCompetitions().then(resolve).catch(reject);
         }
     });
-
 };
 
 Parser.prototype.updateCompetitions = function () {

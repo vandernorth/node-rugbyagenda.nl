@@ -1,26 +1,20 @@
 <div class="container">
-    <div class="page-header">
-        <h1>Rugby agenda
-            <small>Nederland</small>
-        </h1>
+    <div class="row">
+        <div class="col-md-9"><h2>Competities</h2></div>
     </div>
     <div class="row">
         {{~it.competition:l}}
         {{?l}}
         <div class="col-md-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">{{=l.name}}</div>
-                <div class="panel-body">
-                    <ul class="list-group">
-                        {{~l.divisions:d}}
-                        {{?d}}
-                        <a href="/agenda/{{=d.name.cleanup()}}/" class="list-group-item">
-                            {{=d.name}}
-                        </a>
-                        {{?}}
-                        {{~}}
-                    </ul>
-                </div>
+            <div class="list-group">
+                <a href="#" class="list-group-item competition">{{=l.name}}</a>
+                {{~l.divisions:d}}
+                {{?d}}
+                <a href="/agenda/{{=d.name.cleanup()}}/" class="list-group-item">
+                    {{=d.name.undash()}}
+                </a>
+                {{?}}
+                {{~}}
             </div>
 
         </div>

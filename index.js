@@ -1,4 +1,7 @@
+//== Todo: Improve code style....
+
 require("console-stamp")(console);
+require('string').extendPrototype();
 
 var Parser     = require('./parser'),
     fs         = require('fs'),
@@ -7,7 +10,19 @@ var Parser     = require('./parser'),
     ical       = require('ical-generator'),
     util       = require('util'),
     morgan     = require('morgan'),
-    _          = require('lodash');
+    moment     = require('moment'),
+    _          = require('lodash'),
+    lastUpdate = 'Onbekend';
+
+moment.locale('nl-NL');
+
+try {
+    process.chdir(__dirname);
+    console.log('New directory: ' + process.cwd());
+}
+catch ( err ) {
+    console.log('chdir: ' + err);
+}
 
 var express = require('express');
 var app     = express();
@@ -16,6 +31,7 @@ app.use(morgan('combined'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'dot');
 app.engine('dot', doT.__express);
+app.use('/public', express.static('public'));
 app.get('/', function ( req, res ) {
     thisParser.getCompetition().then(competitionInfo => {
         res.render('home', {
@@ -23,7 +39,8 @@ app.get('/', function ( req, res ) {
                 var a       = c;
                 a.divisions = _.map(c.divisions, b=> b);
                 return a.divisions.length > 0 ? a : false;
-            })
+            }),
+            lastUpdate:  typeof lastUpdate === 'string' ? lastUpdate : lastUpdate.fromNow()
         });
     })
 });
@@ -32,9 +49,10 @@ app.get(/^\/agenda\/([\d\w-]+)\/$/, function ( req, res ) {
     try {
         var info = require('./data/' + req.params[0] + '.json');
         res.render('agenda', {
-            url:   'http://www.rugbyagenda.nl/ical/' + req.params[0] + '/',
-            teams: info.teams,
-            name:  req.params[0].split('_').join(' ')
+            url:        'http://www.rugbyagenda.nl/ical/' + req.params[0] + '/',
+            teams:      _(info.teams).sortBy('name').value(),
+            name:       req.params[0].split('_').join(' '),
+            lastUpdate: typeof lastUpdate === 'string' ? lastUpdate : lastUpdate.fromNow()
         });
     }
     catch ( ex ) {
@@ -91,13 +109,19 @@ function compareName( a, b ) {
     return a.cleanup() === b.cleanup();
 }
 
-try {
-    process.chdir(__dirname);
-    console.log('New directory: ' + process.cwd());
+function getLastUpdate() {
+    try {
+        lastUpdate = moment(JSON.parse(fs.readFileSync('./data/lastupdate.json').toString()).date);
+        console.log('Updates "lastupdate"', lastUpdate.format('LLL'));
+    }
+    catch ( e ) {
+        console.error('Cannot get lastupdate', e);
+        lastUpdate = 'Onbekend';
+    }
 }
-catch ( err ) {
-    console.log('chdir: ' + err);
-}
+
+getLastUpdate();
+setInterval(getLastUpdate, 1200000);//==20 minutes
 
 var server = app.listen(82, () => {
     console.log('rugbyagenda.nl listning on port 82');

@@ -1,0 +1,92 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+/* Colors
+http://colorschemedesigner.com/csd-3.5/#3631Tw0w0w0w0
+#00AB6F
+#20805E
+#006F48
+#35D59D
+#60D5AC
+*/
+
+html {
+    /*
+    background:              url('/public/img/wallpaper.jpg') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size:    cover;
+    -o-background-size:      cover;
+    background-size:         cover;
+    */
+}
+
+body {
+    background-color: inherit;
+    font-family:      'Open Sans', sans-serif;
+}
+
+.header {
+    height:           75px;
+    width:            100%;
+    background-color: #00ab6f;
+    border:           1px solid #20805e;
+    margin:           0;
+    padding:          0;
+    overflow:         hidden;
+    color:            #eee;
+}
+
+.lastupdate {
+    margin-top: 50px;
+}
+
+.list-group-item.competition {
+    background-color: #00ab6f;
+    border:           1px solid #20805e;
+    cursor:           default;
+    color:            #fff;
+}
+
+.list-group-item.competition:hover {
+    background-color: #006f48;
+    border:           1px solid #20805e;
+    color:            #fff;
+    cursor:           default;
+}
+
+.teamsheader.header {
+    background-color: #a66200;
+    border:           1px solid #bf8530;
+}
+
+.content {
+}
+
+.footer {
+    height:           155px;
+    width:            100%;
+    background-color: #00ab6f;
+    border:           1px solid #20805e;
+    margin:           0;
+    padding-top:      10px;
+    overflow:         hidden;
+    color:            #eee;
+}
+
+.footer a {
+    color: white;
+}
+
+html, body {
+    height: 100%;
+}
+
+.wrapper {
+    min-height: 100%;
+    height:     auto !important; /* This line and the next line are not necessary unless you need IE6 support */
+    height:     100%;
+    margin:     0 auto -110px; /* the bottom margin is the negative value of the footer's height */
+}
+
+.footer, .push {
+    height: 110px; /* .push must be the same height as .footer */
+}

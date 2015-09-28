@@ -1,12 +1,45 @@
 <div class="container">
-    <h1>Rugby agenda voor {{=it.name}}</h1>
-    Kopieer de volgende url naar Google Calendar of Outlook om de agenda te importeren.
-
+    <h1>Agenda's voor {{=it.name.undash()}}</h1>
+    Gebruik de volgende opties om de agenda te importeren.
     <h3>Gehele competitie</h3>
-    <pre>{{=it.url}}</pre>
-    <br>
-    {{~it.teams:t}}
-    <h3>Alleen wedstrijden van {{=t.name}}</h3>
-    <pre>{{=it.url}}{{=t.name.cleanup()}}/</pre>
-    {{~}}
+    <div class="btn-group">
+        <!--div class="btn btn-default btn-xs"><span class="fa fa-calendar-o">&nbsp;</span></div-->
+        <a href="webcal://{{!it.url}}" class="btn btn-default btn-sm"><span
+                class="fa fa-mobile">&nbsp;</span>Mobiel / <span class="fa fa-windows">&nbsp;</span>Outlook</a>
+        <a href="{{!it.url}}" class="btn  btn-default btn-sm"><span
+                class="fa fa-cloud-download">&nbsp;</span>Download</a>
+    </div>
+    <br><br>
+    <pre>Kopieer deze url naar je agenda-app<br>{{=it.url}}</pre>
+    <h3>Per team</h3>
+    <table class="table table-hover">
+        <thead>
+        <th>Team</th>
+        <th class="text-right">Importeer</th>
+        </thead>
+        <tbody>
+        {{~it.teams:t}}
+        <tr>
+            <td>{{=t.name}}</td>
+            <td class="text-right">
+                <div class="btn-group">
+                    <!--div class="btn btn-default btn-xs"><span class="fa fa-calendar-o">&nbsp;</span></div-->
+                    <a href="webcal://{{!it.url}}{{!t.name.cleanup()}}/" class="btn btn-default btn-sm"><span
+                            class="fa fa-mobile">&nbsp;</span>Mobiel / <span class="fa fa-windows">&nbsp;</span>Outlook</a>
+
+                    <div class="btn btn-default btn-sm manualbutton"><span class="fa fa-link">&nbsp;</span>Handmatig
+                    </div>
+                    <a href="{{!it.url}}{{!t.name.cleanup()}}/" class="btn  btn-default btn-sm"><span
+                            class="fa fa-cloud-download">&nbsp;</span>Download</a>
+                </div>
+                <div class="manuallink hidden">
+                    <br>
+                    <pre>Kopieer deze url naar je agenda-app<br>{{!it.url}}{{!t.name.cleanup()}}/</pre>
+                </div>
+            </td>
+        </tr>
+        {{~}}
+        </tbody>
+    </table>
+
 </div>

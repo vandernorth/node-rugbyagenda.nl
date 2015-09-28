@@ -27,6 +27,7 @@
     "express-dot"       : "^0",
     "console-stamp"     : "*",
     "morgan"            : "*",
+    "string"            : "*",
     "cookie-parser"     : "^1"
   },
   "license"     : "MIT"

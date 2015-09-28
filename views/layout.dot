@@ -4,11 +4,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Rugby Agenda</title>
 
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/public/agenda.css" rel="stylesheet">
+    <link href="/public/lib/fontawesome/css/font-awesome.min.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -18,10 +19,53 @@
     <![endif]-->
 </head>
 <body>
-{{=it.body}}
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<div class="wrapper">
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h1><span class="fa fa-calendar-check-o">&nbsp;</span>Rugby Agenda</h1>
+                </div>
+                <div class="col-md-6 hidden-xs hidden-sm">
+                    <small><span class="lastupdate pull-right setTooltip"
+                                 data-placement="left"
+                                 title="Deze tijd geeft aan hoelang het geleden is dat de laatste informatie is opgehaald van erugby.nl"><span
+                            class="fa fa-history">&nbsp;</span>Laatste update: {{=it.lastUpdate}}</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        {{=it.body}}
+        <div class="push"></div>
+    </div>
+</div>
+<div class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <a href="mailto:info@rugbyagenda.nl"><span class="fa fa-envelope-o">&nbsp;</span>info@rugbyagenda.nl</a><br>
+                <a href="https://github.com/vandernorth/node-rugbyagenda.nl"><span
+                        class="fa fa-github">&nbsp;</span>node-rugbyagenda.nl</a><br>
+                <a href="#"><span class="fa fa-copyright">&nbsp;</span> 2015 rugbyagenda.nl</a><br>
+            </div>
+            <div class="col-md-6">
+                <span class="fa fa-info-circle">&nbsp;</span> Data blijft eigendom van <a
+                    href="http://www.rugby.nl">rugby.nl</a>
+                en <a href="http://www.erugby.nl">erugby.nl</a><br>
+                <span class="fa fa-book">&nbsp;</span> Aan het gebruik van deze website kunnen geen rechten worden
+                ontleend<br>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="/public/agenda.js"></script>
+
 </body>
 </html>

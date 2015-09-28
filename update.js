@@ -1,5 +1,6 @@
 var Parser     = require('./parser'),
     _          = require('lodash'),
+    fs          = require('fs'),
     thisParser = new Parser();
 
 //== TODO: Backup last files
@@ -14,6 +15,7 @@ function runUpdate() {
                     thisParser.getMatches(division)
                         .then(m => {
                             console.log('Ready', division.name, m.length);
+                            fs.writeFileSync('./data/lastupdate.json',JSON.stringify({date:new Date()}));
                         }).catch(e => {
                             console.error(e);
                         });
