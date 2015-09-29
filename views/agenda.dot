@@ -5,7 +5,7 @@
     <div class="btn-group">
         <!--div class="btn btn-default btn-xs"><span class="fa fa-calendar-o">&nbsp;</span></div-->
         <a href="webcal://{{!it.url}}" class="btn btn-default btn-sm"><span
-                class="fa fa-mobile">&nbsp;</span>Mobiel / <span class="fa fa-windows">&nbsp;</span>Outlook</a>
+                class="fa fa-apple">&nbsp;</span>iPhone / <span class="fa fa-windows">&nbsp;</span>Outlook</a>
         <a href="{{!it.url}}" class="btn  btn-default btn-sm"><span
                 class="fa fa-cloud-download">&nbsp;</span>Download</a>
     </div>
@@ -25,7 +25,7 @@
                 <div class="btn-group">
                     <!--div class="btn btn-default btn-xs"><span class="fa fa-calendar-o">&nbsp;</span></div-->
                     <a href="webcal://{{!it.url}}{{!t.name.cleanup()}}/" class="btn btn-default btn-sm"><span
-                            class="fa fa-mobile">&nbsp;</span>Mobiel / <span class="fa fa-windows">&nbsp;</span>Outlook</a>
+                            class="fa fa-apple">&nbsp;</span>iPhone / <span class="fa fa-windows">&nbsp;</span>Outlook</a>
 
                     <div class="btn btn-default btn-sm manualbutton"><span class="fa fa-link">&nbsp;</span>Handmatig
                     </div>
