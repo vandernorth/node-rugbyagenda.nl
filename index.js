@@ -35,9 +35,11 @@ app.use('/public', express.static('public'));
 app.get('/', function ( req, res ) {
     thisParser.getCompetition().then(competitionInfo => {
         res.render('home', {
-            competition: _.map(competitionInfo, c => {
-                var a       = c;
-                a.divisions = _.map(c.divisions, b=> b);
+            competition: _.map(competitionInfo, ( competition, name ) => {
+                if ( name === 'Cubs' ) {return;}
+                var a       = { name: name };
+                a.divisions = _.sortBy(_.map(competition, b=> b), 'name');
+                console.log(name, a);
                 return a.divisions.length > 0 ? a : false;
             }),
             lastUpdate:  typeof lastUpdate === 'string' ? lastUpdate : lastUpdate.fromNow()
@@ -64,7 +66,7 @@ app.get(/^\/agenda\/([\d\w-]+)\/$/, function ( req, res ) {
 app.get(/^\/ical\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function ( req, res ) {
     try {
         var name = req.params[0], matches = require('./data/' + name + '.json'),
-            team = req.params[1];
+            team                          = req.params[1];
 
         console.log('[ical]', name, team);
 
@@ -91,11 +93,13 @@ app.get(/^\/ical\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function ( req, res ) {
 function icalMatches( matches, team ) {
     return _.compact(_.map(matches, match => {
         if ( !team || (team && (compareName(team, match.homeTeam) || compareName(team, match.awayTeam))) ) {
+
+            var scoreAddition = (match.score && match.score.length > 3 && match.score !== "0 - 0") ? ` [${match.score}]` : '';
             return {
                 start:       new Date(match.datetime),
                 end:         new Date(new Date(match.datetime).getTime() + 7200000),
                 timestamp:   new Date(),
-                summary:     match.homeTeam + ' vs ' + match.awayTeam,
+                summary:     match.homeTeam + ' vs ' + match.awayTeam + scoreAddition,
                 organizer:   match.homeTeam + ' <unknown@rugby.nl>',
                 description: util.format('Thuisteam: %s\nGastteam: %s\nKickoff: %s\nLocation: %s\nScore: %s\n', match.homeTeam, match.awayTeam, match.kickoff, match.location, match.score),
                 url:         match.url,

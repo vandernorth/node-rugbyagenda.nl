@@ -6,18 +6,17 @@ var Parser     = require('./parser'),
 //== TODO: Backup last files
 
 function runUpdate() {
-    console.log('Running update');
     thisParser.getCompetition(true)
         .then(competitionInfo => {
             _.forEach(competitionInfo, competition => {
-                _.forEach(competition.divisions, division => {
-                    console.log('GetMatches', division.name);
+                console.log('GetMatches for', _.keys(competition).length, 'divisions');
+                _.forEach(competition, division => {
                     thisParser.getMatches(division)
                         .then(m => {
                             console.log('Ready', division.name, m.length);
                         }).catch(e => {
-                            console.error(e);
-                        });
+                        console.error(e);
+                    });
                 });
             });
             fs.writeFileSync('./data/lastupdate.json', JSON.stringify({ date: new Date() }));

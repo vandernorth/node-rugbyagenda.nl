@@ -48,7 +48,7 @@
                 <a href="mailto:info@rugbyagenda.nl"><span class="fa fa-envelope-o">&nbsp;</span>info@rugbyagenda.nl</a><br>
                 <a href="https://github.com/vandernorth/node-rugbyagenda.nl"><span
                         class="fa fa-github">&nbsp;</span>node-rugbyagenda.nl</a><br>
-                <a href="#"><span class="fa fa-copyright">&nbsp;</span> 2015 rugbyagenda.nl</a><br>
+                <a href="#"><span class="fa fa-copyright">&nbsp;</span> {{=(new Date()).getFullYear()}} rugbyagenda.nl</a><br>
             </div>
             <div class="col-md-6">
                 <span class="fa fa-info-circle">&nbsp;</span> Data blijft eigendom van <a

@@ -7,15 +7,37 @@ String.prototype.undash  = function () {
     });
 };
 
-var cheerio  = require('cheerio'),
-    _        = require('lodash'),
-    http     = require('http'),
-    fs       = require('fs'),
-    moment   = require('moment'),
-    url      = require('url'),
-    startUrl = 'http://www.rugby.nl/competitie/competitie';
+var cheerio                 = require('cheerio'),
+    _                       = require('lodash'),
+    http                    = require('http'),
+    fs                      = require('fs'),
+    moment                  = require('moment'),
+    url                     = require('url'),
+    competitionCategoryUrls = [
+        {
+            name: 'Heren',
+            url:  'http://www.rugby.nl/page/heren'
+        },
+        {
+            name: 'Dames',
+            url:  'http://www.rugby.nl/page/dames-competitie'
+        },
+        {
+            name: 'Colts',
+            url:  'http://www.rugby.nl/page/colts'
+        },
+        {
+            name: 'Junioren',
+            url:  'http://www.rugby.nl/page/junioren'
+        },
+        {
+            name: 'Cubs',
+            url:  'http://www.rugby.nl/page/cubs'
+        }
+    ];
 
-var Parser = function () {};
+var Parser = function () {
+};
 
 Parser.prototype.getCompetition = function ( override ) {
     return new Promise(( resolve, reject ) => {
@@ -24,8 +46,58 @@ Parser.prototype.getCompetition = function ( override ) {
         }
         else {
             console.warn('Competition file not available, creating a new one.', override, fs.existsSync('./data/competition.json'));
-            this.updateCompetitions().then(resolve).catch(reject);
+            this.getCompetitionsPerType().then(resolve).catch(reject);
         }
+    });
+};
+
+Parser.prototype.getCompetitionsPerType = function () {
+
+    return new Promise(( resolve, reject ) => {
+        var waitForThis = [];
+        competitionCategoryUrls.forEach(category => {
+            waitForThis.push(this.getCompetitionType(category.url, category.name));
+        });
+
+        Promise
+            .all(waitForThis)
+            .then(competitions => {
+
+                var result = {};
+                competitions.forEach(c => {
+                    result[c.key] = c.data;
+                });
+
+                fs.writeFileSync('./data/competition.json', JSON.stringify(result));
+                resolve(result);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+    });
+};
+
+Parser.prototype.getCompetitionType = function ( curl, cname ) {
+    return new Promise(( resolve, reject ) => {
+        var req = http.request({
+            hostname: url.parse(curl).hostname,
+            path:     url.parse(curl).path,
+            port:     80,
+            method:   'GET'
+        }, res => {
+            var htmlpage = '';
+            res.on('data', chunk => {
+                htmlpage += chunk;
+            });
+            res.on('end', () => {
+                resolve({
+                    key:  cname,
+                    data: this.parseCompetitions(htmlpage)
+                });
+            });
+        });
+        req.end();
     });
 };
 
@@ -36,6 +108,8 @@ Parser.prototype.updateCompetitions = function () {
                 return this.getDivisions(competitions);
             })
             .then(competition => {
+                competition.lastUpdate = (new Date()).toJSON();
+                console.log('WriteFile!');
                 fs.writeFileSync('./data/competition.json', JSON.stringify(competition));
                 resolve(competition);
             })
@@ -47,7 +121,6 @@ Parser.prototype.updateCompetitions = function () {
 
 Parser.prototype.getCompetitions = function () {
     return new Promise(( resolve, reject ) => {
-        console.log('[fetch] competitions');
         var req = http.request({
             hostname: url.parse(startUrl).hostname,
             path:     url.parse(startUrl).path,
@@ -59,7 +132,7 @@ Parser.prototype.getCompetitions = function () {
                 htmlpage += chunk;
             });
             res.on('end', () => {
-                console.log('[fetch] competitions ready');
+                //console.log('[fetch] competitions ready');
                 resolve(this.parseCompetitions(htmlpage));
             });
         });
@@ -70,10 +143,11 @@ Parser.prototype.getCompetitions = function () {
 Parser.prototype.parseCompetitions = function ( htmlpage ) {
     var result = {}, $ = cheerio.load(htmlpage);
 
-    $('#block-menu-menu-competities-menu').find('a').each(function () {
+    $('#content').find('a.btn-warning[href]').each(function () {
         result[$(this).text()] = {
-            url:  $(this).attr('href'),
-            name: $(this).text()
+            url:        $(this).attr('href'),
+            name:       $(this).text(),
+            lastUpdate: (new Date()).toJSON()
         };
     });
 
@@ -82,12 +156,12 @@ Parser.prototype.parseCompetitions = function ( htmlpage ) {
 
 Parser.prototype.getDivisions = function ( competitions ) {
 
-    console.log('[fetch] divisions', _.keys(competitions).length);
+    //console.log('[fetch] divisions', _.keys(competitions).length);
 
     return new Promise(( resolve, reject ) => {
         var processed = 0;
         _.forEach(competitions, competition => {
-            console.log('[fetch] division', competition.name);
+            //console.log('[fetch] division', competition.name);
             var req = http.request({
                 hostname: url.parse(startUrl).hostname,
                 path:     competition.url,
@@ -99,7 +173,7 @@ Parser.prototype.getDivisions = function ( competitions ) {
                     htmlpage += chunk;
                 });
                 res.on('end', () => {
-                    console.log('[fetch] division ready', competition.name);
+                    //console.log('[fetch] division ready', competition.name);
                     processed++;
                     competition.divisions = this.parseDivisions(htmlpage);
                     if ( processed === _.keys(competitions).length ) {
@@ -128,9 +202,7 @@ Parser.prototype.parseDivisions = function ( htmlpage ) {
 Parser.prototype.getMatches = function ( division ) {
     return new Promise(( resolve, reject ) => {
         var filename = division.name.cleanup() + '.json';
-        console.log(division.name, '-', filename);
-
-        var req = http.request({
+        var req      = http.request({
             hostname: url.parse(division.url).hostname,
             path:     url.parse(division.url).path,
             port:     80,
@@ -141,19 +213,18 @@ Parser.prototype.getMatches = function ( division ) {
                 htmlpage += chunk;
             });
             res.on('end', () => {
-                console.log('[fetch] matches ready', filename);
                 this.parseMatches(htmlpage, filename);
             });
         });
         req.end();
-
     });
 };
 
 Parser.prototype.parseMatches = function ( htmlpage, filename ) {
     var result = {
-        teams:   [],
-        matches: []
+        teams:      [],
+        matches:    [],
+        lastUpdate: (new Date()).toJSON()
     }, $       = cheerio.load(htmlpage);
 
     //== Teams
@@ -167,7 +238,6 @@ Parser.prototype.parseMatches = function ( htmlpage, filename ) {
     $('.results').find('tr.header').each(function () {
         moment.locale('nl');
         var dateString = $(this).prev().find('td').text(), date = moment(dateString, 'ddd DD MMMM YYYY');
-        console.log('MatchDay', date.format('ll'));
         $(this).nextUntil('.header', 'tr').each(function () {
             if ( $(this).find('td').length > 1 ) {
                 var thisMatch = {
@@ -177,15 +247,14 @@ Parser.prototype.parseMatches = function ( htmlpage, filename ) {
                     location: $(this).find('td:nth-child(2)').text(),
                     homeTeam: $(this).find('td:nth-child(3)').text(),
                     awayTeam: $(this).find('td:nth-child(4)').text(),
-                    mathUrl:  $(this).find('td:nth-child(5) a').attr('href'),
-                    score:    $(this).find('td:nth-child(5) a').text().replace(/(\d+ - \d+)/, "$1").trim()
+                    matchUrl: $(this).find('td:nth-child(5) a').attr('href'),
+                    score:    $(this).find('td:nth-child(5)').text().replace(/(\d+ - \d+)/, "$1").trim()
                 };
                 result.matches.push(thisMatch);
             }
         });
     });
 
-    console.log(result);
     fs.writeFile('./data/' + filename, JSON.stringify(result));
 
     return result;
