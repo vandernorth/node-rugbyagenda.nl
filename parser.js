@@ -230,7 +230,17 @@ Parser.prototype.parseMatches = function ( htmlpage, filename ) {
     //== Teams
     $('#team-ranking').find('tr').not('.header').each(function () {
         result.teams.push({
-            name: $($(this).find('td').get(1)).text()
+            rank:        $($(this).find('td').get(0)).text(),
+            name:        $($(this).find('td').get(1)).text(),
+            playedGames: $($(this).find('td').get(2)).text(),
+            won:         $($(this).find('td').get(3)).text(),
+            lost:        $($(this).find('td').get(4)).text(),
+            equal:       $($(this).find('td').get(5)).text(),
+            points:      $($(this).find('td').get(6)).text(),
+            scoreWon:    $($(this).find('td').get(7)).text(),
+            scoreLost:   $($(this).find('td').get(8)).text(),
+            scoreDiff:   $($(this).find('td').get(9)).text()
+
         });
     });
 

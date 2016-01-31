@@ -1,0 +1,55 @@
+<div class="container">
+    <h1>Competitie {{=it.name.undash()}}</h1>
+    <h3>Stand</h3>
+    <table class="table table-hover">
+        <thead>
+        <th>#</th>
+        <th>Team</th>
+        <th>Gespeeld</th>
+        <th>Gewonnen</th>
+        <th>Verloren</th>
+        <th>Gelijk</th>
+        <th>Punten</th>
+        <th>Scoreverschil</th>
+        </thead>
+        <tbody>
+        {{~it.teams:t}}
+        <tr class="row-team" data-rugby-team="{{!t.name}}">
+            <td>{{=t.rank}}</td>
+            <td>{{=t.name}}</td>
+            <td>{{=t.playedGames}}</td>
+            <td>{{=t.won}}</td>
+            <td>{{=t.lost}}</td>
+            <td>{{=t.equal}}</td>
+            <td>{{=t.points}}</td>
+            <td>{{=t.scoreDiff}}</td>
+        </tr>
+        {{~}}
+        </tbody>
+    </table>
+
+    <h3>Programma</h3>
+    <table class="table table-hover">
+        <thead>
+        <th>Datum</th>
+        <th>Kickoff</th>
+        <th>Thuis</th>
+        <th>Uit</th>
+        <th>Locatie</th>
+        <th>Score</th>
+        </thead>
+        <tbody>
+        {{~it.matches:m}}
+        <tr class="match" data-rugby-away="{{!m.awayTeam}}" data-rugby-home="{{!m.homeTeam}}">
+            <td>{{=m.date}}</td>
+            <td>{{=m.kickoff}}</td>
+            <td>{{=m.homeTeam}}</td>
+            <td>{{=m.awayTeam}}</td>
+            <td><a href="http://maps.google.com/?q=Sportpark {{!m.location}}">{{=m.location}}</a></td>
+            <td>{{=(m.score || '').replace('0 - 0','')}}</td>
+        </tr>
+        {{~}}
+        </tbody>
+    </table>
+
+</div>

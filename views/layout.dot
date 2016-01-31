@@ -24,7 +24,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <h1><span class="fa fa-calendar-check-o">&nbsp;</span>Rugby Agenda</h1>
+                    <h1 class="page-title"><span class="fa fa-calendar-check-o">&nbsp;</span>Rugby Agenda</h1>
                 </div>
                 <div class="col-md-6 hidden-xs hidden-sm">
                     <small><span class="lastupdate pull-right setTooltip"

@@ -1,10 +1,24 @@
 $(document).ready(function () {
-    console.log('Ready');
     $('.setTooltip').tooltip({ container: 'body' });
-
     $('.manualbutton').click(function(){
         $(this).parent().parent().find('.manuallink').toggleClass('hidden');
         $(this).toggleClass('active');
+    });
+    $('.page-title').click(function(){
+        window.location = '/';
+    });
+
+    $('.row-team').click(function(){
+        var clickedTeam = $(this).data('rugby-team');
+        $('tr.row-team').removeClass('info');
+        $(this).addClass('info');
+        $('tr.match>td').removeClass('bold');
+        $('tr.match[data-rugby-home="'+clickedTeam+'"]>td:nth-child(3)').addClass('bold');
+        $('tr.match[data-rugby-away="'+clickedTeam+'"]>td:nth-child(4)').addClass('bold');
+        $('tr.match')
+            .removeClass('hidden')
+            .not('[data-rugby-away="'+clickedTeam+'"],[data-rugby-home="'+clickedTeam+'"]')
+            .addClass('hidden');
     });
 });
 

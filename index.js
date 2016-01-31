@@ -68,8 +68,6 @@ app.get(/^\/ical\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function ( req, res ) {
         var name = req.params[0], matches = require('./data/' + name + '.json'),
             team                          = req.params[1];
 
-        console.log('[ical]', name, team);
-
         var cal = ical({
             domain:   'rugbyagenda.nl',
             name:     'Rugby Competitie - ' + name.split('_').join(' '),
@@ -82,7 +80,25 @@ app.get(/^\/ical\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function ( req, res ) {
         });
 
         cal.serve(res);
-        //res.render('agenda', { url: cal.toString() });
+    }
+    catch ( ex ) {
+        console.error(ex);
+        res.end('Agenda not found');
+    }
+});
+
+app.get(/^\/watch\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function ( req, res ) {
+    try {
+        var name = req.params[0], matches = require('./data/' + name + '.json'),
+            team                          = req.params[1];
+
+        res.render('watch', {
+            name:       name,
+            matches:    matches.matches,
+            teams:      matches.teams,
+            lastUpdate: moment(matches.lastUpdate).fromNow(),
+            team:       team
+        });
     }
     catch ( ex ) {
         console.error(ex);

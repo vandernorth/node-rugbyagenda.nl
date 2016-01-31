@@ -35,8 +35,21 @@ body {
     color:            #eee;
 }
 
+.page-title {
+    cursor: pointer;
+}
+
 .lastupdate {
     margin-top: 50px;
+}
+
+/*
+.table>tbody>tr.info>td {
+    background-color: #00ab6f;
+}
+*/
+.bold {
+    font-weight: bold;
 }
 
 .list-group-item.competition {
