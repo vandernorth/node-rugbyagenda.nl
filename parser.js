@@ -16,23 +16,23 @@ var cheerio                 = require('cheerio'),
     competitionCategoryUrls = [
         {
             name: 'Heren',
-            url:  'http://www.rugby.nl/page/heren'
+            url:  'http://www.rugby.nl/page/heren-0'
         },
         {
             name: 'Dames',
-            url:  'http://www.rugby.nl/page/dames-competitie'
+            url:  'http://www.rugby.nl/page/dames'
         },
         {
             name: 'Colts',
-            url:  'http://www.rugby.nl/page/colts'
+            url:  'http://www.rugby.nl/page/colts-0'
         },
         {
             name: 'Junioren',
-            url:  'http://www.rugby.nl/page/junioren'
+            url:  'http://www.rugby.nl/page/junioren-0'
         },
         {
             name: 'Cubs',
-            url:  'http://www.rugby.nl/page/cubs'
+            url:  'http://www.rugby.nl/page/cubs-0'
         }
     ];
 
@@ -65,6 +65,7 @@ Parser.prototype.getCompetitionsPerType = function () {
 
                 var result = {};
                 competitions.forEach(c => {
+                    console.log('Competition ' + c.key);
                     result[c.key] = c.data;
                 });
 
@@ -201,6 +202,7 @@ Parser.prototype.parseDivisions = function ( htmlpage ) {
 
 Parser.prototype.getMatches = function ( division ) {
     return new Promise(( resolve, reject ) => {
+        console.log('GetMatches for', division);
         var filename = division.name.cleanup() + '.json';
         var req      = http.request({
             hostname: url.parse(division.url).hostname,
@@ -267,6 +269,7 @@ Parser.prototype.parseMatches = function ( htmlpage, filename ) {
 
     fs.writeFile('./data/' + filename, JSON.stringify(result));
 
+    console.log(`Division has ${result.matches.length} matches`);
     return result;
 };
 

@@ -5,10 +5,10 @@ After=network.target
 
 [Service]
 TimeoutStartSec=0
-Type=forking
-ExecStart=/usr/local/bin/forever start --pidFile /var/run/rugbyagenda.pid -l /var/log/rugbyagenda.out.log -e /var/log/rugbyagenda.error.log -a -c "node --harmony" -d -f /srv/node-rugbyagenda.nl/index.js
-ExecReload=/usr/local/bin/forever restart /srv/node-rugbyagenda.nl/index.js
-ExecStop=/usr/local/bin/forever stop /srv/node-rugbyagenda.nl/index.js
+ExecStart=/usr/bin/node /srv/node-rugbyagenda.nl/index.js
+Type=simple
+Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
