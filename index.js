@@ -51,7 +51,7 @@ app.get(/^\/agenda\/([\d\w-]+)\/$/, function ( req, res ) {
     try {
         var info = require('./data/' + req.params[0] + '.json');
         res.render('agenda', {
-            url:        'http://www.rugbyagenda.nl/ical/' + req.params[0] + '/',
+            url:        'https://www.rugbyagenda.nl/ical/' + req.params[0] + '/',
             teams:      _(info.teams).sortBy('name').value(),
             name:       req.params[0].split('_').join(' '),
             lastUpdate: typeof lastUpdate === 'string' ? lastUpdate : lastUpdate.fromNow()
