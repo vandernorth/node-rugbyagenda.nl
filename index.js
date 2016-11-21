@@ -1,4 +1,3 @@
-//== Todo: Improve code style....
 "use strict";
 require("console-stamp")(console);
 require('string').extendPrototype();
