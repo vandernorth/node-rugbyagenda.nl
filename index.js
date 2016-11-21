@@ -32,7 +32,7 @@ class RugbyAgenda {
         //== 15 minute refresh interval
         setInterval(() => {
             this.getLastUpdate();
-        }, 15 * 60);
+        }, 10 * 60 * 1000);
     }
 
     static fixCWD() {
