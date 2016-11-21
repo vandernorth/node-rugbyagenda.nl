@@ -1,11 +1,11 @@
 {
   "name"        : "eRugby-ical",
-  "version"     : "0.9.1",
+  "version"     : "0.9.2",
   "description" : "Parse matches on rugby.nl/erugby.nl and serve them as ical",
   "author"      : "Jeffrey van Norden <jeffreyvannorden@gmail.com>",
   "scripts"     : {
-    "start" : "node --harmony index.js",
-    "update": "node --harmony update.js"
+    "start" : "node index.js",
+    "update": "node update.js"
   },
   "main"        : "index.js",
   "repository"  : {
