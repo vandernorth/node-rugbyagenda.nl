@@ -31,7 +31,8 @@ class RugbyAgenda {
         //== 15 minute refresh interval
         setInterval(() => {
             this.getLastUpdate();
-        }, 10 * 60 * 1000);
+            this.cleanCache();
+        }, 20 * 60 * 1000);
     }
 
     static fixCWD() {
@@ -149,6 +150,14 @@ class RugbyAgenda {
 
     static compareName( a, b ) {
         return a.cleanup() === b.cleanup();
+    }
+
+    cleanCache() {
+        _.keys(require.cache).filter(r => r.indexOf('data') > -1 && r.indexOf('.json') > -1).forEach(r => {
+            console.log('Clearing cache for', r);
+            delete require.cache[r];
+        });
+        console.info('cleanCache()::Ready');
     }
 
     getLastUpdate() {
