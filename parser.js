@@ -1,3 +1,4 @@
+"use strict";
 String.prototype.cleanup = function () {
     return this.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-");
 };
@@ -259,7 +260,6 @@ Parser.prototype.parseMatches = function ( htmlpage, filename ) {
                     location: $(this).find('td:nth-child(2)').text(),
                     homeTeam: $(this).find('td:nth-child(3)').text(),
                     awayTeam: $(this).find('td:nth-child(4)').text(),
-                    matchUrl: $(this).find('td:nth-child(5) a').attr('href'),
                     score:    $(this).find('td:nth-child(5)').text().replace(/(\d+ - \d+)/, "$1").trim()
                 };
                 result.matches.push(thisMatch);

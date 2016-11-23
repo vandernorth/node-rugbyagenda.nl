@@ -46,7 +46,7 @@
             <td>{{=m.homeTeam}}</td>
             <td>{{=m.awayTeam}}</td>
             <td><a href="http://maps.google.com/?q=Sportpark {{!m.location}}">{{=m.location}}</a></td>
-            <td>{{=(m.score || '').replace('0 - 0','')}}</td>
+            <td>{{=(m.score || '').replace(/^0 - 0$/,'')}}</td>
         </tr>
         {{~}}
         </tbody>
