@@ -17,23 +17,23 @@ var cheerio                 = require('cheerio'),
     competitionCategoryUrls = [
         {
             name: 'Heren',
-            url:  'http://www.rugby.nl/page/heren-0'
+            url:  'http://www.rugby.nl/page/heren-1'
         },
         {
             name: 'Dames',
-            url:  'http://www.rugby.nl/page/dames'
+            url:  'http://www.rugby.nl/page/dames-1'
         },
         {
             name: 'Colts',
-            url:  'http://www.rugby.nl/page/colts-0'
+            url:  'http://www.rugby.nl/page/colts-2'
         },
         {
             name: 'Junioren',
-            url:  'http://www.rugby.nl/page/junioren-0'
+            url:  'http://www.rugby.nl/page/junioren-2'
         },
         {
             name: 'Cubs',
-            url:  'http://www.rugby.nl/page/cubs-0'
+            url:  'http://www.rugby.nl/page/cubs-2'
         }
     ];
 
