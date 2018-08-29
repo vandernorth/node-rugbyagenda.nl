@@ -10,30 +10,30 @@ String.prototype.undash  = function () {
 
 var cheerio                 = require('cheerio'),
     _                       = require('lodash'),
-    http                    = require('http'),
+    https                    = require('https'),
     fs                      = require('fs'),
     moment                  = require('moment'),
     url                     = require('url'),
     competitionCategoryUrls = [
         {
             name: 'Heren',
-            url:  'http://www.rugby.nl/page/heren-1'
+            url:  'http://www.rugby.nl/page/heren-2'
         },
         {
             name: 'Dames',
-            url:  'http://www.rugby.nl/page/dames-1'
+            url:  'http://www.rugby.nl/page/dames-2'
         },
         {
             name: 'Colts',
-            url:  'http://www.rugby.nl/page/colts-2'
+            url:  'http://www.rugby.nl/page/colts-3'
         },
         {
             name: 'Junioren',
-            url:  'http://www.rugby.nl/page/junioren-2'
+            url:  'http://www.rugby.nl/page/junioren-3'
         },
         {
             name: 'Cubs',
-            url:  'http://www.rugby.nl/page/cubs-2'
+            url:  'http://www.rugby.nl/page/cubs-3'
         }
     ];
 
@@ -82,10 +82,9 @@ Parser.prototype.getCompetitionsPerType = function () {
 
 Parser.prototype.getCompetitionType = function ( curl, cname ) {
     return new Promise(( resolve, reject ) => {
-        var req = http.request({
+        var req = https.request({
             hostname: url.parse(curl).hostname,
             path:     url.parse(curl).path,
-            port:     80,
             method:   'GET'
         }, res => {
             var htmlpage = '';
@@ -123,10 +122,9 @@ Parser.prototype.updateCompetitions = function () {
 
 Parser.prototype.getCompetitions = function () {
     return new Promise(( resolve, reject ) => {
-        var req = http.request({
+        var req = https.request({
             hostname: url.parse(startUrl).hostname,
             path:     url.parse(startUrl).path,
-            port:     80,
             method:   'GET'
         }, res => {
             var htmlpage = '';
@@ -145,7 +143,7 @@ Parser.prototype.getCompetitions = function () {
 Parser.prototype.parseCompetitions = function ( htmlpage ) {
     var result = {}, $ = cheerio.load(htmlpage);
 
-    $('#content').find('a.btn-warning[href]').each(function () {
+    $('#content').find('a.btn-primary[href]').each(function () {
         result[$(this).text()] = {
             url:        $(this).attr('href'),
             name:       $(this).text(),
@@ -164,10 +162,9 @@ Parser.prototype.getDivisions = function ( competitions ) {
         var processed = 0;
         _.forEach(competitions, competition => {
             //console.log('[fetch] division', competition.name);
-            var req = http.request({
+            var req = https.request({
                 hostname: url.parse(startUrl).hostname,
                 path:     competition.url,
-                port:     80,
                 method:   'GET'
             }, res => {
                 var htmlpage = '';
@@ -205,10 +202,9 @@ Parser.prototype.getMatches = function ( division ) {
     return new Promise(( resolve, reject ) => {
         console.log('GetMatches for', division);
         var filename = division.name.cleanup() + '.json';
-        var req      = http.request({
+        var req      = https.request({
             hostname: url.parse(division.url).hostname,
             path:     url.parse(division.url).path,
-            port:     80,
             method:   'GET'
         }, res => {
             var htmlpage = '';
@@ -267,7 +263,7 @@ Parser.prototype.parseMatches = function ( htmlpage, filename ) {
         });
     });
 
-    fs.writeFile('./data/' + filename, JSON.stringify(result));
+    fs.writeFileSync('./data/' + filename, JSON.stringify(result));
 
     console.log(`Division has ${result.matches.length} matches`);
     return result;

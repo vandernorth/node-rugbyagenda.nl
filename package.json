@@ -1,34 +1,34 @@
 {
-  "name"        : "eRugby-ical",
-  "version"     : "0.9.3",
-  "description" : "Parse matches on rugby.nl/erugby.nl and serve them as ical",
-  "author"      : "Jeffrey van Norden <jeffreyvannorden@gmail.com>",
-  "scripts"     : {
-    "start" : "node index.js",
+  "name": "eRugby-ical",
+  "version": "0.9.4",
+  "description": "Parse matches on rugby.nl/erugby.nl and serve them as ical",
+  "author": "Jeffrey van Norden <jeffreyvannorden@gmail.com>",
+  "scripts": {
+    "start": "node index.js",
     "update": "node update.js"
   },
-  "main"        : "index.js",
-  "repository"  : {
+  "main": "index.js",
+  "repository": {
     "type": "git",
-    "url" : "https://github.com/"
+    "url": "https://github.com/"
   },
-  "keywords"    : [
+  "keywords": [
     "rugby",
     "nl",
     "ical"
   ],
   "dependencies": {
-    "lodash"            : "*",
-    "moment"            : "*",
-    "ical-generator"    : "*",
-    "cheerio"           : "*",
+    "lodash": "*",
+    "moment": "*",
+    "ical-generator": "*",
+    "cheerio": "*",
     "express-request-id": "^1",
-    "express"           : "^4",
-    "express-dot"       : "^0",
-    "console-stamp"     : "*",
-    "morgan"            : "*",
-    "string"            : "*",
-    "cookie-parser"     : "^1"
+    "express": "^4",
+    "express-dot": "^0",
+    "console-stamp": "*",
+    "morgan": "*",
+    "string": "*",
+    "cookie-parser": "^1"
   },
-  "license"     : "MIT"
+  "license": "MIT"
 }
