@@ -17,15 +17,15 @@ var cheerio                 = require('cheerio'),
     competitionCategoryUrls = [
         {
             name: 'Heren',
-            url:  'http://www.rugby.nl/page/heren-2'
+            url:  'http://www.rugby.nl/page/heren-3'
         },
         {
             name: 'Dames',
-            url:  'http://www.rugby.nl/page/dames-2'
+            url:  'http://www.rugby.nl/page/dames-4'
         },
         {
             name: 'Colts',
-            url:  'http://www.rugby.nl/page/colts-3'
+            url:  'http://www.rugby.nl/page/colts-4'
         },
         {
             name: 'Junioren',
