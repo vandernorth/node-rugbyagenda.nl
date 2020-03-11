@@ -1,29 +1,21 @@
-var Parser     = require('./parser'),
-    _          = require('lodash'),
-    fs         = require('fs'),
-    thisParser = new Parser();
+const Parser     = require('./parser'),
+      _          = require('lodash'),
+      fs         = require('fs'),
+      thisParser = new Parser();
 
-//== TODO: Backup last files
+async function runUpdate() {
+    const competitionInfo = await thisParser.getCompetition(true),
+          start           = Date.now().valueOf();
 
-function runUpdate() {
-    thisParser.getCompetition(true)
-        .then(competitionInfo => {
-            _.forEach(competitionInfo, competition => {
-                console.log('GetMatches for', _.keys(competition).length, 'divisions');
-                _.forEach(competition, division => {
-                    thisParser.getMatches(division)
-                        .then(m => {
-                            console.log('Ready', division.name, m.length);
-                        }).catch(e => {
-                        console.error(e);
-                    });
-                });
-            });
-            fs.writeFileSync('./data/lastupdate.json', JSON.stringify({ date: new Date() }));
-        })
-        .catch(e => {
-            console.error(e);
-        });
+    console.info('Sync started');
+    await Promise.all(_.map(competitionInfo, competition => {
+        return Promise.all(_.map(competition, division => {
+            return thisParser.getMatches(division)
+                .catch(e => console.error(e));
+        }));
+    }));
+    console.info('Sync ready after', (Date.now().valueOf() - start) / 1000, 's');
+    fs.writeFileSync('./data/lastupdate.json', JSON.stringify({ date: new Date() }));
 }
 
-runUpdate();
+module.exports = runUpdate;

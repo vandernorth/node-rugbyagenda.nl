@@ -1,61 +1,61 @@
 "use strict";
-String.prototype.cleanup = function () {
+String.prototype.cleanup = function() {
     return this.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-");
 };
-String.prototype.undash  = function () {
-    return this.replace(/[^a-zA-Z0-9]+/g, " ").replace(/\w\S*/g, function ( txt ) {
+
+String.prototype.undash = function() {
+    return this.replace(/[^a-zA-Z0-9]+/g, " ").replace(/\w\S*/g, function( txt ) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
 };
 
-var cheerio                 = require('cheerio'),
-    _                       = require('lodash'),
-    https                    = require('https'),
-    fs                      = require('fs'),
-    moment                  = require('moment'),
-    url                     = require('url'),
-    competitionCategoryUrls = [
-        {
-            name: 'Heren',
-            url:  'http://www.rugby.nl/page/heren-3'
-        },
-        {
-            name: 'Dames',
-            url:  'http://www.rugby.nl/page/dames-4'
-        },
-        {
-            name: 'Colts',
-            url:  'http://www.rugby.nl/page/colts-4'
-        },
-        {
-            name: 'Junioren',
-            url:  'http://www.rugby.nl/page/junioren-3'
-        },
-        {
-            name: 'Cubs',
-            url:  'http://www.rugby.nl/page/cubs-3'
-        }
-    ];
+const cheerio                 = require('cheerio'),
+      _                       = require('lodash'),
+      https                   = require('https'),
+      fs                      = require('fs'),
+      moment                  = require('moment'),
+      url                     = require('url'),
+      competitionCategoryUrls = [
+          {
+              name: 'Heren',
+              url:  'http://www.rugby.nl/page/heren-3'
+          },
+          {
+              name: 'Dames',
+              url:  'http://www.rugby.nl/page/dames-4'
+          },
+          {
+              name: 'Colts',
+              url:  'http://www.rugby.nl/page/colts-4'
+          },
+          {
+              name: 'Junioren',
+              url:  'http://www.rugby.nl/page/junioren-3'
+          },
+          {
+              name: 'Cubs',
+              url:  'http://www.rugby.nl/page/cubs-3'
+          }
+      ];
 
-var Parser = function () {
+const Parser = function() {
 };
 
-Parser.prototype.getCompetition = function ( override ) {
+Parser.prototype.getCompetition = function( override ) {
     return new Promise(( resolve, reject ) => {
         if ( !override && fs.existsSync('./data/competition.json') ) {
             resolve(JSON.parse(fs.readFileSync('./data/competition.json').toString()));
-        }
-        else {
+        } else {
             console.warn('Competition file not available, creating a new one.', override, fs.existsSync('./data/competition.json'));
             this.getCompetitionsPerType().then(resolve).catch(reject);
         }
     });
 };
 
-Parser.prototype.getCompetitionsPerType = function () {
+Parser.prototype.getCompetitionsPerType = function() {
 
-    return new Promise(( resolve, reject ) => {
-        var waitForThis = [];
+    return new Promise(( resolve ) => {
+        let waitForThis = [];
         competitionCategoryUrls.forEach(category => {
             waitForThis.push(this.getCompetitionType(category.url, category.name));
         });
@@ -64,11 +64,8 @@ Parser.prototype.getCompetitionsPerType = function () {
             .all(waitForThis)
             .then(competitions => {
 
-                var result = {};
-                competitions.forEach(c => {
-                    console.log('Competition ' + c.key);
-                    result[c.key] = c.data;
-                });
+                const result = {};
+                competitions.forEach(c => result[c.key] = c.data);
 
                 fs.writeFileSync('./data/competition.json', JSON.stringify(result));
                 resolve(result);
@@ -80,14 +77,14 @@ Parser.prototype.getCompetitionsPerType = function () {
     });
 };
 
-Parser.prototype.getCompetitionType = function ( curl, cname ) {
+Parser.prototype.getCompetitionType = function( curl, cname ) {
     return new Promise(( resolve, reject ) => {
-        var req = https.request({
+        let req = https.request({
             hostname: url.parse(curl).hostname,
             path:     url.parse(curl).path,
             method:   'GET'
         }, res => {
-            var htmlpage = '';
+            let htmlpage = '';
             res.on('data', chunk => {
                 htmlpage += chunk;
             });
@@ -102,7 +99,7 @@ Parser.prototype.getCompetitionType = function ( curl, cname ) {
     });
 };
 
-Parser.prototype.updateCompetitions = function () {
+Parser.prototype.updateCompetitions = function() {
     return new Promise(( resolve, reject ) => {
         this.getCompetitions()
             .then(competitions => {
@@ -110,7 +107,6 @@ Parser.prototype.updateCompetitions = function () {
             })
             .then(competition => {
                 competition.lastUpdate = (new Date()).toJSON();
-                console.log('WriteFile!');
                 fs.writeFileSync('./data/competition.json', JSON.stringify(competition));
                 resolve(competition);
             })
@@ -120,19 +116,18 @@ Parser.prototype.updateCompetitions = function () {
     });
 };
 
-Parser.prototype.getCompetitions = function () {
+Parser.prototype.getCompetitions = function() {
     return new Promise(( resolve, reject ) => {
-        var req = https.request({
+        let req = https.request({
             hostname: url.parse(startUrl).hostname,
             path:     url.parse(startUrl).path,
             method:   'GET'
         }, res => {
-            var htmlpage = '';
+            let htmlpage = '';
             res.on('data', chunk => {
                 htmlpage += chunk;
             });
             res.on('end', () => {
-                //console.log('[fetch] competitions ready');
                 resolve(this.parseCompetitions(htmlpage));
             });
         });
@@ -140,10 +135,10 @@ Parser.prototype.getCompetitions = function () {
     });
 };
 
-Parser.prototype.parseCompetitions = function ( htmlpage ) {
-    var result = {}, $ = cheerio.load(htmlpage);
+Parser.prototype.parseCompetitions = function( htmlpage ) {
+    const result = {}, $ = cheerio.load(htmlpage);
 
-    $('#content').find('a.btn-primary[href]').each(function () {
+    $('#content').find('a.btn-primary[href]').each(function() {
         result[$(this).text()] = {
             url:        $(this).attr('href'),
             name:       $(this).text(),
@@ -154,25 +149,20 @@ Parser.prototype.parseCompetitions = function ( htmlpage ) {
     return result;
 };
 
-Parser.prototype.getDivisions = function ( competitions ) {
-
-    //console.log('[fetch] divisions', _.keys(competitions).length);
-
+Parser.prototype.getDivisions = function( competitions ) {
     return new Promise(( resolve, reject ) => {
-        var processed = 0;
+        let processed = 0;
         _.forEach(competitions, competition => {
-            //console.log('[fetch] division', competition.name);
-            var req = https.request({
+            let req = https.request({
                 hostname: url.parse(startUrl).hostname,
                 path:     competition.url,
                 method:   'GET'
             }, res => {
-                var htmlpage = '';
+                let htmlpage = '';
                 res.on('data', chunk => {
                     htmlpage += chunk;
                 });
                 res.on('end', () => {
-                    //console.log('[fetch] division ready', competition.name);
                     processed++;
                     competition.divisions = this.parseDivisions(htmlpage);
                     if ( processed === _.keys(competitions).length ) {
@@ -185,10 +175,10 @@ Parser.prototype.getDivisions = function ( competitions ) {
     });
 };
 
-Parser.prototype.parseDivisions = function ( htmlpage ) {
-    var result = {}, $ = cheerio.load(htmlpage);
+Parser.prototype.parseDivisions = function( htmlpage ) {
+    let result = {}, $ = cheerio.load(htmlpage);
 
-    $('.region.region-sidebar-first').find('a').each(function () {
+    $('.region.region-sidebar-first').find('a').each(function() {
         result[$(this).text()] = {
             url:  $(this).attr('href'),
             name: $(this).text()
@@ -198,36 +188,31 @@ Parser.prototype.parseDivisions = function ( htmlpage ) {
     return result;
 };
 
-Parser.prototype.getMatches = function ( division ) {
-    return new Promise(( resolve, reject ) => {
-        console.log('GetMatches for', division);
-        var filename = division.name.cleanup() + '.json';
-        var req      = https.request({
-            hostname: url.parse(division.url).hostname,
-            path:     url.parse(division.url).path,
-            method:   'GET'
-        }, res => {
-            var htmlpage = '';
-            res.on('data', chunk => {
-                htmlpage += chunk;
-            });
-            res.on('end', () => {
-                this.parseMatches(htmlpage, filename);
-            });
-        });
+Parser.prototype.getMatches = function( division ) {
+    return new Promise(resolve => {
+        const filename = division.name.cleanup() + '.json',
+              req      = https.request({
+                  hostname: url.parse(division.url).hostname,
+                  path:     url.parse(division.url).path,
+                  method:   'GET'
+              }, res => {
+                  let htmlpage = '';
+                  res.on('data', chunk => htmlpage += chunk);
+                  res.on('end', () => resolve(this.parseMatches(htmlpage, filename)));
+              });
         req.end();
     });
 };
 
-Parser.prototype.parseMatches = function ( htmlpage, filename ) {
-    var result = {
+Parser.prototype.parseMatches = function( htmlpage, filename ) {
+    let result = {
         teams:      [],
         matches:    [],
         lastUpdate: (new Date()).toJSON()
     }, $       = cheerio.load(htmlpage);
 
     //== Teams
-    $('#team-ranking').find('tr').not('.header').each(function () {
+    $('#team-ranking').find('tr').not('.header').each(function() {
         result.teams.push({
             rank:        $($(this).find('td').get(0)).text(),
             name:        $($(this).find('td').get(1)).text(),
@@ -244,12 +229,12 @@ Parser.prototype.parseMatches = function ( htmlpage, filename ) {
     });
 
     //== Matches
-    $('.results').find('tr.header').each(function () {
+    $('.results').find('tr.header').each(function() {
         moment.locale('nl');
-        var dateString = $(this).prev().find('td').text(), date = moment(dateString, 'ddd DD MMMM YYYY');
-        $(this).nextUntil('.header', 'tr').each(function () {
+        let dateString = $(this).prev().find('td').text(), date = moment(dateString, 'ddd DD MMMM YYYY');
+        $(this).nextUntil('.header', 'tr').each(function() {
             if ( $(this).find('td').length > 1 ) {
-                var thisMatch = {
+                let thisMatch = {
                     date:     date.format('YYYY-MM-DD'),
                     datetime: moment(dateString + ' ' + $(this).find('td:nth-child(1)').text(), 'ddd DD MMMM YYYY hh:mm').toDate(),
                     kickoff:  $(this).find('td:nth-child(1)').text(),
@@ -264,8 +249,6 @@ Parser.prototype.parseMatches = function ( htmlpage, filename ) {
     });
 
     fs.writeFileSync('./data/' + filename, JSON.stringify(result));
-
-    console.log(`Division has ${result.matches.length} matches`);
     return result;
 };
 

@@ -12,6 +12,7 @@ const _          = require('lodash'),
       express    = require('express'),
       app        = express(),
       Parser     = require('./parser'),
+      runUpdate  = require('./update'),
       thisParser = new Parser();
 
 let lastUpdate = 'Onbekend';
@@ -23,16 +24,20 @@ class RugbyAgenda {
         this.startServer();
         this.getLastUpdate();
 
-        this.server = app.listen(82, () => {
-            console.log('rugbyagenda.nl listning on port 82');
+        app.listen(3000, () => {
+            console.log('rugbyagenda.nl listning on port 3000');
             console.log('Working directory', process.cwd(), __dirname);
         });
 
-        //== 15 minute refresh interval
-        setInterval(() => {
+        setInterval(() => this.doUpdate(), 15 * 60 * 1000);
+        this.doUpdate();
+    }
+
+    doUpdate() {
+        runUpdate().then(() => {
             this.getLastUpdate();
             this.cleanCache();
-        }, 20 * 60 * 1000);
+        });
     }
 
     static fixCWD() {
@@ -52,7 +57,7 @@ class RugbyAgenda {
         app.set('view engine', 'dot');
         app.engine('dot', doT.__express);
         app.use('/public', express.static('public'));
-        app.get('/', function ( req, res ) {
+        app.get('/', function( req, res ) {
             thisParser.getCompetition().then(competitionInfo => {
                 res.render('home', {
                     competition: _.map(competitionInfo, ( competition, name ) => {
@@ -60,18 +65,17 @@ class RugbyAgenda {
                             return;
                         }
                         var a       = { name: name };
-                        a.divisions = _.sortBy(_.map(competition, b=> b), 'name');
-                        console.log(name, a);
+                        a.divisions = _.sortBy(_.map(competition, b => b), 'name');
                         return a.divisions.length > 0 ? a : false;
                     }),
                     lastUpdate:  typeof lastUpdate === 'string' ? lastUpdate : lastUpdate.fromNow()
                 });
-            })
+            });
         });
 
-        app.get(/^\/agenda\/([\d\w-]+)\/$/, function ( req, res ) {
+        app.get(/^\/agenda\/([\d\w-]+)\/$/, function( req, res ) {
             try {
-                var info = require('./data/' + req.params[0] + '.json');
+                const info = require('./data/' + req.params[0] + '.json');
                 res.render('agenda', {
                     url:        'https://www.rugbyagenda.nl/ical/' + req.params[0] + '/',
                     teams:      _(info.teams).sortBy('name').value(),
@@ -85,12 +89,12 @@ class RugbyAgenda {
             }
         });
 
-        app.get(/^\/ical\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function ( req, res ) {
+        app.get(/^\/ical\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function( req, res ) {
             try {
-                var name = req.params[0], matches = require('./data/' + name + '.json'),
-                    team                          = req.params[1];
+                const name = req.params[0], matches = require('./data/' + name + '.json'),
+                      team                          = req.params[1];
 
-                var cal = ical({
+                const cal = ical({
                     domain:   'rugbyagenda.nl',
                     name:     'Rugby Competitie - ' + name.split('_').join(' '),
                     prodId:   {
@@ -109,10 +113,10 @@ class RugbyAgenda {
             }
         });
 
-        app.get(/^\/watch\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function ( req, res ) {
+        app.get(/^\/watch\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function( req, res ) {
             try {
-                var name = req.params[0], matches = require('./data/' + name + '.json'),
-                    team                          = req.params[1];
+                const name = req.params[0], matches = require('./data/' + name + '.json'),
+                      team                          = req.params[1];
 
                 res.render('watch', {
                     name:       name,
@@ -133,7 +137,7 @@ class RugbyAgenda {
         return _.compact(_.map(matches, match => {
             if ( !team || (team && (RugbyAgenda.compareName(team, match.homeTeam) || RugbyAgenda.compareName(team, match.awayTeam))) ) {
 
-                var scoreAddition = (match.score && match.score.length > 3 && match.score !== "0 - 0") ? ` [${match.score}]` : '';
+                const scoreAddition = (match.score && match.score.length > 3 && match.score !== "0 - 0") ? ` [${match.score}]` : '';
                 return {
                     start:       new Date(match.datetime),
                     end:         new Date(new Date(match.datetime).getTime() + 7200000),
