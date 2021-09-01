@@ -1,6 +1,6 @@
 {
   "name": "erugby-ical",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "type": "module",
   "description": "Parse matches on rugby.nl/erugby.nl and serve them as ical",
   "author": "Jeffrey van Norden <jeffreyvannorden@gmail.com>",

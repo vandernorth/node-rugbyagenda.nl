@@ -1,11 +1,9 @@
 "use strict";
-import axios   from 'axios';
-import cheerio from "cheerio";
 import _       from "lodash";
-import https   from "https";
 import fs      from "fs";
+import axios   from 'axios';
 import moment  from "moment";
-import url     from "url";
+import cheerio from "cheerio";
 
 String.prototype.cleanup = function() {
     return this.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-");
@@ -58,95 +56,11 @@ export default class Parser {
         return result;
     }
 
-    updateCompetitions() {
-        return new Promise((resolve, reject) => {
-            this.getCompetitions()
-                .then(competitions => {
-                    return this.getDivisions(competitions);
-                })
-                .then(competition => {
-                    competition.lastUpdate = (new Date()).toJSON();
-                    fs.writeFileSync('./data/competition.json', JSON.stringify(competition));
-                    resolve(competition);
-                })
-                .catch(e => {
-                    console.error('Error: ', e);
-                });
-        });
-    }
+    async getMatches(division) {
+        const filename = division.name.cleanup() + '.json',
+              req      = await axios.get(division.url);
 
-    getCompetitions() {
-        return new Promise((resolve, reject) => {
-            let req = https.request({
-                hostname: url.parse(startUrl).hostname,
-                path:     url.parse(startUrl).path,
-                method:   'GET'
-            }, res => {
-                let htmlpage = '';
-                res.on('data', chunk => {
-                    htmlpage += chunk;
-                });
-                res.on('end', () => {
-                    resolve(this.parseCompetitions(htmlpage));
-                });
-            });
-            req.end();
-        });
-    }
-
-    getDivisions(competitions) {
-        return new Promise((resolve, reject) => {
-            let processed = 0;
-            _.forEach(competitions, competition => {
-                let req = https.request({
-                    hostname: url.parse(startUrl).hostname,
-                    path:     competition.url,
-                    method:   'GET'
-                }, res => {
-                    let htmlpage = '';
-                    res.on('data', chunk => {
-                        htmlpage += chunk;
-                    });
-                    res.on('end', () => {
-                        processed++;
-                        competition.divisions = this.parseDivisions(htmlpage);
-                        if (processed === _.keys(competitions).length) {
-                            resolve(competitions);
-                        }
-                    });
-                });
-                req.end();
-            });
-        });
-    }
-
-    parseDivisions(htmlpage) {
-        let result = {}, $ = cheerio.load(htmlpage);
-
-        $('.region.region-sidebar-first').find('a').each(function() {
-            result[$(this).text()] = {
-                url:  $(this).attr('href'),
-                name: $(this).text()
-            };
-        });
-
-        return result;
-    }
-
-    getMatches(division) {
-        return new Promise(resolve => {
-            const filename = division.name.cleanup() + '.json',
-                  req      = https.request({
-                      hostname: url.parse(division.url).hostname,
-                      path:     url.parse(division.url).path,
-                      method:   'GET'
-                  }, res => {
-                      let htmlpage = '';
-                      res.on('data', chunk => htmlpage += chunk);
-                      res.on('end', () => resolve(this.parseMatches(htmlpage, filename)));
-                  });
-            req.end();
-        });
+        return this.parseMatches(req.data, filename);
     }
 
     parseMatches(htmlpage, filename) {
