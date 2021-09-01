@@ -90,8 +90,12 @@ class RugbyAgenda {
                 const info = require('../data/' + req.params[0] + '.json');
                 res.render('agenda', {
                     url:        'https://www.rugbyagenda.nl/ical/' + req.params[0] + '/',
-                    teams:      _(info.teams).sortBy('name').value(),
-                    name:       req.params[0].split('_').join(' '),
+                    teams:      _(info.teams).sortBy('name').value().map(team => {
+                        team.filename = team.name.cleanup();
+                        return team;
+                    }),
+                    name:       req.params[0].split('-').map(_.capitalize).join(' '),
+                    filename:   req.params[0],
                     lastUpdate: typeof lastUpdate === 'string' ? lastUpdate : lastUpdate.fromNow()
                 });
             } catch (ex) {
@@ -107,7 +111,7 @@ class RugbyAgenda {
 
                 const cal = ical({
                     domain:   'rugbyagenda.nl',
-                    name:     'Rugby Competitie - ' + name.split('_').join(' '),
+                    name:     'Rugby Competitie - ' + name.split('-').join(' '),
                     prodId:   {
                         company: 'erugby.nl',
                         product: 'ical'
@@ -131,6 +135,7 @@ class RugbyAgenda {
 
                 res.render('watch', {
                     name:       name,
+                    title:      name.split('-').map(_.capitalize).join(' '),
                     matches:    matches.matches,
                     teams:      matches.teams,
                     lastUpdate: moment(matches.lastUpdate).fromNow(),

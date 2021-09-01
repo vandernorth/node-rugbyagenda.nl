@@ -26,18 +26,18 @@
             <td class="text-right">
                 <div class="btn-group">
                     <!--div class="btn btn-default btn-xs"><span class="fa fa-calendar-o">&nbsp;</span></div-->
-                    <a href="webcal://{{!it.url}}{{!t.name}}/" class="btn btn-default btn-sm"><span
+                    <a href="webcal://{{!it.url}}{{!t.filename}}/" class="btn btn-default btn-sm"><span
                             class="fa fa-apple">&nbsp;</span>iPhone / <span
                             class="fa fa-windows">&nbsp;</span>Outlook</a>
 
                     <div class="btn btn-default btn-sm manualbutton"><span class="fa fa-link">&nbsp;</span>Handmatig
                     </div>
-                    <a href="{{!it.url}}{{!t.name}}/" class="btn  btn-default btn-sm"><span
+                    <a href="{{!it.url}}{{!t.filename}}/" class="btn  btn-default btn-sm"><span
                             class="fa fa-cloud-download">&nbsp;</span>Download</a>
                 </div>
                 <div class="manuallink hidden">
                     <br>
-                    <pre>Kopieer deze url naar je agenda-app<br>{{!it.url}}{{!t.name}}/</pre>
+                    <pre>Kopieer deze url naar je agenda-app<br>{{!it.url}}{{!t.filename}}/</pre>
                 </div>
             </td>
         </tr>
