@@ -10,8 +10,8 @@
                 <a href="#" class="list-group-item competition">{{=l.name}}</a>
                 {{~l.divisions:d}}
                 {{?d}}
-                <a href="/agenda/{{=d.name.cleanup()}}/" class="list-group-item">
-                    {{=d.name.undash()}}
+                <a href="/agenda/{{=d.filename}}/" class="list-group-item">
+                    {{=d.name}}
                 </a>
                 {{?}}
                 {{~}}

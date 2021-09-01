@@ -1,18 +1,31 @@
 "use strict";
-require("console-stamp")(console);
-require('string').extendPrototype();
+import console_stamp from "console-stamp";
+import stringLib     from "string";
 
-const _          = require('lodash'),
-      fs         = require('fs'),
-      doT        = require('express-dot'),
-      ical       = require('ical-generator'),
-      util       = require('util'),
-      morgan     = require('morgan'),
-      moment     = require('moment'),
-      express    = require('express'),
-      app        = express(),
-      Parser     = require('./parser'),
-      runUpdate  = require('./update'),
+import _               from "lodash";
+import fs              from "fs";
+import doT             from "express-dot";
+import ical            from "ical-generator";
+import util            from "util";
+import morgan          from "morgan";
+import moment          from "moment";
+import runUpdate       from "./update.js";
+import express         from "express";
+import Parser          from "./parser.js";
+import {dirname}       from 'path';
+import {fileURLToPath} from 'url';
+import {createRequire} from "module";
+
+const require   = createRequire(import.meta.url);
+const __dirname = dirname(fileURLToPath(import.meta.url));
+console_stamp(console);
+stringLib.extendPrototype();
+
+String.prototype.cleanup = function() {
+    return this.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-");
+};
+
+const app        = express(),
       thisParser = new Parser();
 
 let lastUpdate = 'Onbekend';
@@ -44,8 +57,7 @@ class RugbyAgenda {
         try {
             process.chdir(__dirname);
             console.info('New directory: ' + process.cwd());
-        }
-        catch ( err ) {
+        } catch (err) {
             console.info('chdir: ' + err);
         }
     }
@@ -53,19 +65,19 @@ class RugbyAgenda {
     startServer() {
         let self = this;
         app.use(morgan('combined'));
-        app.set('views', __dirname + '/views');
+        app.set('views', __dirname.replace('src', '') + '/views');
         app.set('view engine', 'dot');
         app.engine('dot', doT.__express);
-        app.use('/public', express.static('public'));
-        app.get('/', function( req, res ) {
+        app.use('/public', express.static('../public'));
+        app.get('/', function(req, res) {
             thisParser.getCompetition().then(competitionInfo => {
                 res.render('home', {
-                    competition: _.map(competitionInfo, ( competition, name ) => {
-                        if ( name === 'Cubs' ) {
-                            return;
-                        }
-                        var a       = { name: name };
-                        a.divisions = _.sortBy(_.map(competition, b => b), 'name');
+                    competition: _.map(_.groupBy(competitionInfo, 'type'), (competition, name) => {
+                        var a       = {name: name};
+                        a.divisions = _.sortBy(_.map(competition, b => {
+                            b.dashed = _.kebabCase(b.name);
+                            return b;
+                        }), 'name');
                         return a.divisions.length > 0 ? a : false;
                     }),
                     lastUpdate:  typeof lastUpdate === 'string' ? lastUpdate : lastUpdate.fromNow()
@@ -73,25 +85,24 @@ class RugbyAgenda {
             });
         });
 
-        app.get(/^\/agenda\/([\d\w-]+)\/$/, function( req, res ) {
+        app.get(/^\/agenda\/([\d\w-]+)\/$/, function(req, res) {
             try {
-                const info = require('./data/' + req.params[0] + '.json');
+                const info = require('../data/' + req.params[0] + '.json');
                 res.render('agenda', {
                     url:        'https://www.rugbyagenda.nl/ical/' + req.params[0] + '/',
                     teams:      _(info.teams).sortBy('name').value(),
                     name:       req.params[0].split('_').join(' '),
                     lastUpdate: typeof lastUpdate === 'string' ? lastUpdate : lastUpdate.fromNow()
                 });
-            }
-            catch ( ex ) {
+            } catch (ex) {
                 console.error(ex);
                 res.end('Agenda not found');
             }
         });
 
-        app.get(/^\/ical\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function( req, res ) {
+        app.get(/^\/ical\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function(req, res) {
             try {
-                const name = req.params[0], matches = require('./data/' + name + '.json'),
+                const name = req.params[0], matches = require('../data/' + name + '.json'),
                       team                          = req.params[1];
 
                 const cal = ical({
@@ -106,17 +117,17 @@ class RugbyAgenda {
                 });
 
                 cal.serve(res);
-            }
-            catch ( ex ) {
+            } catch (ex) {
                 console.error(ex);
                 res.end('Agenda not found');
             }
         });
 
-        app.get(/^\/watch\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function( req, res ) {
+        app.get(/^\/watch\/([\d\w-]+)\/([\d\w-]+)?\/?$/, function(req, res) {
             try {
-                const name = req.params[0], matches = require('./data/' + name + '.json'),
-                      team                          = req.params[1];
+                const name    = req.params[0],
+                      matches = require('../data/' + name + '.json'),
+                      team    = req.params[1];
 
                 res.render('watch', {
                     name:       name,
@@ -125,17 +136,16 @@ class RugbyAgenda {
                     lastUpdate: moment(matches.lastUpdate).fromNow(),
                     team:       team
                 });
-            }
-            catch ( ex ) {
-                console.error(ex);
+            } catch (ex) {
+                console.error('watch/error', ex);
                 res.end('Agenda not found');
             }
         });
     }
 
-    icalMatches( matches, team ) {
+    icalMatches(matches, team) {
         return _.compact(_.map(matches, match => {
-            if ( !team || (team && (RugbyAgenda.compareName(team, match.homeTeam) || RugbyAgenda.compareName(team, match.awayTeam))) ) {
+            if (!team || (team && (RugbyAgenda.compareName(team, match.homeTeam) || RugbyAgenda.compareName(team, match.awayTeam)))) {
 
                 const scoreAddition = (match.score && match.score.length > 3 && match.score !== "0 - 0") ? ` [${match.score}]` : '';
                 return {
@@ -152,7 +162,7 @@ class RugbyAgenda {
         }));
     }
 
-    static compareName( a, b ) {
+    static compareName(a, b) {
         return a.cleanup() === b.cleanup();
     }
 
@@ -166,10 +176,9 @@ class RugbyAgenda {
 
     getLastUpdate() {
         try {
-            lastUpdate = moment(JSON.parse(fs.readFileSync('./data/lastupdate.json').toString()).date);
+            lastUpdate = moment(JSON.parse(fs.readFileSync('../data/lastupdate.json').toString()).date);
             console.log('Updates "lastupdate"', lastUpdate.format('LLL'));
-        }
-        catch ( e ) {
+        } catch (e) {
             console.error('Cannot get lastupdate', e);
             lastUpdate = 'Onbekend';
         }
@@ -177,4 +186,3 @@ class RugbyAgenda {
 }
 
 const rugbyAgenda = new RugbyAgenda();
-module.exports    = rugbyAgenda;

@@ -1,5 +1,5 @@
 <div class="container">
-    <h1>Agenda's voor {{=it.name.undash()}}</h1>
+    <h1>Agenda's voor {{=it.name}}</h1>
     Gebruik de volgende opties om de agenda te importeren.
     <h3>Gehele competitie</h3>
     <div class="btn-group">
@@ -26,18 +26,18 @@
             <td class="text-right">
                 <div class="btn-group">
                     <!--div class="btn btn-default btn-xs"><span class="fa fa-calendar-o">&nbsp;</span></div-->
-                    <a href="webcal://{{!it.url}}{{!t.name.cleanup()}}/" class="btn btn-default btn-sm"><span
+                    <a href="webcal://{{!it.url}}{{!t.name}}/" class="btn btn-default btn-sm"><span
                             class="fa fa-apple">&nbsp;</span>iPhone / <span
                             class="fa fa-windows">&nbsp;</span>Outlook</a>
 
                     <div class="btn btn-default btn-sm manualbutton"><span class="fa fa-link">&nbsp;</span>Handmatig
                     </div>
-                    <a href="{{!it.url}}{{!t.name.cleanup()}}/" class="btn  btn-default btn-sm"><span
+                    <a href="{{!it.url}}{{!t.name}}/" class="btn  btn-default btn-sm"><span
                             class="fa fa-cloud-download">&nbsp;</span>Download</a>
                 </div>
                 <div class="manuallink hidden">
                     <br>
-                    <pre>Kopieer deze url naar je agenda-app<br>{{!it.url}}{{!t.name.cleanup()}}/</pre>
+                    <pre>Kopieer deze url naar je agenda-app<br>{{!it.url}}{{!t.name}}/</pre>
                 </div>
             </td>
         </tr>

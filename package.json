@@ -1,13 +1,14 @@
 {
-  "name": "eRugby-ical",
-  "version": "0.9.4",
+  "name": "erugby-ical",
+  "version": "0.9.5",
+  "type": "module",
   "description": "Parse matches on rugby.nl/erugby.nl and serve them as ical",
   "author": "Jeffrey van Norden <jeffreyvannorden@gmail.com>",
   "scripts": {
-    "start": "node index.js",
-    "update": "node update.js"
+    "start": "node src/index.js",
+    "update": "node src/update.js"
   },
-  "main": "index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/"
@@ -18,16 +19,17 @@
     "ical"
   ],
   "dependencies": {
+    "axios": "0",
     "cheerio": "0",
-    "console-stamp": "^0.2.9",
-    "cookie-parser": "^1.4.4",
+    "console-stamp": "3",
+    "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
     "express-dot": "0",
     "express-request-id": "^1.4.1",
-    "ical-generator": "^1.9.2",
-    "lodash": "^4.17.15",
-    "moment": "^2.24.0",
-    "morgan": "^1.9.1",
+    "ical-generator": "^1.15.4",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "morgan": "^1.10.0",
     "string": "3"
   },
   "license": "MIT"
