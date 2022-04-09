@@ -28,7 +28,7 @@
     "express-request-id": "^1.4.1",
     "ical-generator": "^1.15.4",
     "lodash": "^4.17.21",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "morgan": "^1.10.0",
     "string": "3"
   },
